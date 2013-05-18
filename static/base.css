@@ -1,3 +1,4 @@
 .counter { counter-reset: listing; }
 pre { counter-increment: listing; }
 .counter pre:before { content: counter(listing) ". "; color: gray; }
+.counter pre b {width:25px;display:block;float:left;}

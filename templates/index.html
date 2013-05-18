@@ -22,7 +22,7 @@
 			<form method="POST" action="">
 				<p>
 					<label for="message">Plain text message:</label>
-					<input name="message" value="" id="message" />
+					<textarea name="message" id="message"></textarea>
 				</p>
 				<p>
 					<label for="key">Key (16bit):</label>
@@ -45,7 +45,7 @@
 			</header>
 
 			<div class="counter">
-				{% for chunk in message_chunks%}<pre>{{chunk}}</pre>{% endfor %}
+				{% for chunk in message_chunks%}<pre><b>{{chunk|to_ascii}}</b> {{chunk}}</pre>{% endfor %}
 			</div>
 		</article>
 	</section>
