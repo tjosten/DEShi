@@ -3,6 +3,8 @@ import binascii
 app = Flask(__name__)
 
 KEYLEN = 16
+IP = [10, 6, 14, 2, 8, 16, 12, 4, 1, 13, 7, 9, 5, 11, 3, 15]
+IP_REVERSE = [9, 4, 15, 8, 13, 2, 11, 5, 12, 1, 14, 7, 10, 3, 16, 6]
 
 # tools
 def to_binary(string):
@@ -24,6 +26,17 @@ def chunks(string, length):
 	# produce length-character chunks from string
 	for i in range(0, len(string), length):
 		yield string[i:i+length]
+
+# permutation with chunks and IP parameter
+def permutation(chunks, ip):
+	permutated_chunks = [0] * len(chunks)
+	for run, chunk in enumerate(chunks):
+		permutated_chunk = [0] * len(chunk)
+		for index, value in enumerate(chunk):
+			new_index = ip[index]
+			permutated_chunk[index] = chunk[new_index-1]
+		permutated_chunks[run] = ''.join(i for i in permutated_chunk)
+	return permutated_chunks
 
 # template filters
 @app.template_filter("to_ascii")
@@ -54,6 +67,16 @@ def index():
 
 		app.logger.debug("Message in chunks of %d-bit:" % KEYLEN)
 		app.logger.debug(message_chunks)
+
+		# do the initial permutation
+		permutated_message_chunks = permutation(message_chunks, IP)
+		app.logger.debug("Message in permutated chunks of %d-bit:" % KEYLEN)
+		app.logger.debug(permutated_message_chunks)
+
+		# check if unpermutation works
+		unpermutated_message_chunks = permutation(permutated_message_chunks, IP_REVERSE)
+		if unpermutated_message_chunks != message_chunks:
+			raise Exception("Permutation and then unpermutation did not return the initual message chunks!")
 
 	return render_template("index.html", **locals())
 

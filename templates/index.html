@@ -51,6 +51,20 @@
 	</section>
 	{% endif %}
 
+	{% if permutated_message_chunks %}
+	<section>
+		<article>
+			<header>
+				<h3>Message chunks (permutated)</h3>
+			</header>
+
+			<div class="counter">
+				{% for chunk in permutated_message_chunks%}<pre>{{chunk}}</pre>{% endfor %}
+			</div>
+		</article>
+	</section>
+	{% endif %}
+
 	<footer>
 		<em>DEShi - CRY Assignment 1.k</em>
 	</footer>
