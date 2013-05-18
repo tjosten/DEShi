@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+	<link type="text/css" href="/static/base.css" rel="stylesheet" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>DEShi</title>
+</head>
+
+<body>
+	<header>
+		<h1>DEShi</h1>
+		<p>Simple DES with 16bit keylen</p>
+	</header>
+
+	<section>
+		<article>
+			<header>
+				<h3>Encryption</h3>
+			</header>
+
+			<form method="POST" action="">
+				<p>
+					<label for="message">Plain text message:</label>
+					<input name="message" value="" id="message" />
+				</p>
+				<p>
+					<label for="key">Key (16bit):</label>
+					<input name="key" value="" id="key" />
+				</p>
+
+				<p>
+					<input type="submit" value="Encrypt" />
+				</p>
+			</form>
+
+		</article>
+	</section>
+
+	{% if message_chunks %}
+	<section>
+		<article>
+			<header>
+				<h3>Message chunks</h3>
+			</header>
+
+			<div class="counter">
+				{% for chunk in message_chunks%}<pre>{{chunk}}</pre>{% endfor %}
+			</div>
+		</article>
+	</section>
+	{% endif %}
+
+	<footer>
+		<em>DEShi - CRY Assignment 1.k</em>
+	</footer>
+
+</body>
+
+</html>
