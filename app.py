@@ -18,18 +18,17 @@ def index():
 			app.logger.info("Key: %s" % key)
 			app.logger.info("Message: %s" % message)
 
-			deshi = DEShi(key, message)
-
 			if request.form['type'] == "Encrypt":
 				# encryption
 				app.logger.info("Requesting encryption")
+
+				deshi = DEShi(key, message)
 
 				# call encryption method on deshi
 				deshi.encrypt()
 
 				cypher = deshi.cyphertext
-
-				print cypher
+				cypher = cypher.encode('hex')
 
 			#######################################################
 
@@ -39,17 +38,21 @@ def index():
 
 				cypher = message
 
+				deshi = DEShi(key, cypher.decode('hex'))
+
 				# call the decryption method on deshi
 				deshi.decrypt()
 
 				message = deshi.plaintext
 
 				print message
-
 		except:
 			raise
 
-	return render_template("index.html", **locals())
+	try:
+		return render_template("index.html", **locals())
+	except:
+		raise Exception("Unable to parse template due to invalid ASCII characters - most probably your decryption key is wrong!")
 
 if __name__ == "__main__":
 	app.run(debug=True)

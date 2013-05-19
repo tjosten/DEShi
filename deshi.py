@@ -69,9 +69,9 @@ class DEShi(object):
 		result = []
 		position = char = 0
 
-		"""# first 8 bit:
-		first = bits[8:]
-		last = bits[:8]
+		# first 8 bit:
+		first = bits[:8]
+		last = bits[8:]
 
 		first_string = [''] * len(first)
 		last_string = [''] * len(last)
@@ -89,18 +89,9 @@ class DEShi(object):
 			i+=1
 		last_string = eval('0b'+''.join(last_string))
 
-		print first_string
+		#print first_string
 
-		return "%s%s" % (chr(first_string), chr(last_string))"""
-
-		while position < len(bits):
-			char += bits[position] << (7 - (position % 8))
-			if (position % 8) == 7:
-				result.append(char)
-				char = 0
-			position += 1
-
-		return ''.join([ chr(char) for char in result ])
+		return "%s%s" % (chr(first_string), chr(last_string))
 
 	# returns an ascii string as a bit list
 	def _ascii_to_bits(self, ascii):
@@ -265,17 +256,17 @@ class DEShi(object):
 			encrypted_data = self._deshi(data, 'encrypt')
 
 			# append cypher text to result list, but convert it to ascii first
-			#result.append(self._bits_to_ascii(encrypted_data))
+			result.append(self._bits_to_ascii(encrypted_data))
 			# ok, we don't convert it to ascii as we're 8-bit here and 255 > 128, so we get illegal characters. we then use a binary cypher text.
-			result.append(encrypted_data)
+			#result.append(encrypted_data)
 
 			i += 2
 
-		result_text = ""
+		result_text = "".join(result)
 
-		for r in result:
+		"""for r in result:
 			for i in r:
-				result_text += str(i)
+				result_text += str(i)"""
 
 		self.cyphertext = result_text
 
@@ -299,6 +290,6 @@ class DEShi(object):
 			# append plain text to result list, but convert it to ascii first
 			result.append(self._bits_to_ascii(decrypted_data))
 
-			i += 16
+			i += 2
 
 		self.plaintext = ''.join(result)
