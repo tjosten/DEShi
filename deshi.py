@@ -59,6 +59,13 @@ class DEShi(object):
 		# generate subkeys
 		self._generate_subkeys()
 
+		print "========="
+		print "Key: %s" % self._key
+		print "Subkeys:"
+		for subkey in self._subkeys:
+			print subkey
+		print "========="
+
 	##############################################
 	# private methods
 	##############################################
@@ -148,27 +155,11 @@ class DEShi(object):
 
 	# permutation with given IP
 	def _permutate(self, message, ip):
-
-		print message
-		if len(message) != 16:
-			if type(message) == str:
-				message = "00000000" + message
-			else:
-				message = [0] * 8 + message
-
 		permutated_message = [0] * len(ip)
 		for index, value in enumerate(permutated_message):
 			new_index = ip[index]
 			permutated_message[index] = int(message[new_index-1])
 		return permutated_message
-
-	# expansion with given IP
-	def _expand(self, message, ip):
-		expanded_message = [0] * len(ip)
-		for index, value in enumerate(expanded_message):
-			new_index = ip[index]
-			expanded_message[index] = int(message[new_index-1])
-		return expanded_message
 
 	# the DEShi algo
 	def _deshi(self, chunk, typ='encrypt'):
@@ -190,11 +181,15 @@ class DEShi(object):
 			temporary_R = R
 
 			# expand R to 12 bit
-			R = self._expand(R, self._EXPANSION)
+			R = self._permutate(R, self._EXPANSION)
 			subkey = self._subkeys[iteration]
 
 			# xor operation for the lists, the python way
-			R = list(map(lambda e, key: e ^ key, R, subkey))
+			#R = list(map(lambda e, key: e ^ key, R, subkey))
+			j = 0
+			while j < len(R):
+				R[j] = R[j] ^ subkey[j]
+				j += 1
 
 			# blocks of 2x6-bit for Sbox 1 and Sbox 2
 			blocks = [R[:6], R[6:]]
@@ -210,7 +205,6 @@ class DEShi(object):
 
 				# get correct integer value from sbox
 				result = self._SBOXES[j][int(row, 2)][int(col, 2)]
-
 				# save the result
 				sbox_results[j] = result
 
@@ -221,12 +215,21 @@ class DEShi(object):
 			for result in sbox_results:
 				R_tmp += result
 
+			print "R: %s" % R
+			print "L: %s" % L
+
 			# convert value to binary again, remove the b prefix and make it 8 bit
 			result_binary = bin(R_tmp)[2:].zfill(8)
 			R = self._permutate(result_binary, self._P)
 
+			print R
+
 			# and finally: XOR with L
-			R = list(map(lambda r, l: r ^ l, R, L))
+			#R = list(map(lambda r, l: r ^ l, R, L))
+			j = 0
+			while j < len(R):
+				R[j] = R[j] ^ L[j]
+				j += 1
 
 			# L becomes old R
 			L = temporary_R
@@ -236,6 +239,8 @@ class DEShi(object):
 				iteration += 1
 			else:
 				iteration -= 1
+
+			print "-------"
 
 		# done, final permutation
 		final = self._permutate(R + L, self._IP_INVERSE)

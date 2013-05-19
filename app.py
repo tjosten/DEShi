@@ -30,6 +30,8 @@ def index():
 				cypher = deshi.cyphertext
 				cypher = cypher.encode('hex')
 
+				print cypher
+
 			#######################################################
 
 			else:
