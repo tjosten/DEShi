@@ -1,17 +1,37 @@
 fieldset {
-	width: 200px;
+	width: 97%;
 }
 
-fieldset p {
-	width: 150px;
+input {
+	width: 100%;
 }
 
 textarea {
-	width: 150px;
+	width: 100%;
 	height: 50px;
 }
 
-/*.counter { counter-reset: listing; }
-pre { counter-increment: listing; }
-.counter pre:before { content: counter(listing) ". "; color: gray; }
-.counter pre b {width:25px;display:block;float:left;}*/
+textarea.result {
+	margin-top: -25px;
+	height: 100px;
+}
+
+footer {
+	font-size: small;
+}
+
+.row {
+	margin-left: 0px;
+}
+
+header {
+	margin-bottom: 30px;
+}
+
+footer {
+	margin-top: 50px;
+}
+
+.container {
+	width: 500px;
+}

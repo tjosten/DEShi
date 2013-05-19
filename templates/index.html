@@ -1,88 +1,109 @@
 <!DOCTYPE HTML>
-
-<html>
+<html lang="en">
 <head>
+	<link type="text/css" href="/static/bootstrap.min.css" rel="stylesheet" />
 	<link type="text/css" href="/static/base.css" rel="stylesheet" />
+	<script type="text/javascript" src="/static/jquery.min.js"></script>
+	<script type="text/javascript" src="/static/bootstrap.min.js"></script>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>DEShi</title>
 </head>
 
-<body style="width:500px">
-	<header>
-		<h1>DEShi</h1>
-		<p>Simple DES with 16bit keylen</p>
-	</header>
+<body>
+	<div class="container">
+		<header>
+			<h1>DEShi</h1>
+			<p>Simple DES with 16-bit keylen</p>
+		</header>
+		<div class="row">
 
-	<section style="float:left;">
-		<article>
-			<form method="POST" action="">
-				<fieldset>
-					<legend>Encryption</legend>
-					<p>
-						<label for="key">Key (16bit):</label>
-						<input name="key" value="{{ key }}" id="key" />
-					</p>
-					<p>
-						<label for="message">Plain text message:</label>
-						<textarea name="message" id="message">{{ message }}</textarea>
-					</p>
-					<p>
-						<input type="submit" name="type" value="Encrypt" />
-					</p>
-				</fieldset>
-			</form>
-		</article>
-	</section>
+			{% if error %}
+			<div class="alert alert-error">
+  				<button type="button" class="close" data-dismiss="alert">&times;</button>
+  				{{error}}
+			</div>
+			{% endif %}
 
-	<section style="float:right;">
-		<article>
-			<form method="POST" action="">
-				<fieldset>
-					<legend>Decryption</legend>
-					<p>
-						<label for="key">Key (16bit):</label>
-						<input name="key" value="{{ key }}" id="key" />
-					</p>
-					<p>
-						<label for="message">Cyphertext message (hex):</label>
-						<textarea name="message" id="message">{{ cypher }}</textarea>
-					</p>
-					<p>
-						<input type="submit" name="type" value="Decrypt" />
-					</p>
-				</fieldset>
-			</form>
-		</article>
-	</section>
+			<ul class="nav nav-tabs">
+				<li{% if typ == "" or typ == "encrypt" %} class="active"{% endif %}>
+					<a href="#encrypt" data-toggle="tab">Encrypt</a>
+				</li>
+				<li{% if typ == "decrypt" %} class="active"{% endif %}>
+					<a href="#decrypt" data-toggle="tab">Decrypt</a>
+				</li>
+			</ul>
 
-	<br style="clear:both" />
+			<div class="tab-content">
+				<section id="encrypt" class="tab-pane{% if typ == "" or typ == "encrypt" %} active{% endif %}">
+					<article>
+						<form method="POST" action="">
+							<fieldset>
+								<legend>Encryption</legend>
+								<p>
+									<label for="key">Key (16-bit):</label>
+									<input type="text" name="key" maxlength="2" value="{{ key }}" id="key" />
+								</p>
+								<p>
+									<label for="message">Plain text message:</label>
+									<textarea name="message" id="message">{{ message }}</textarea>
+								</p>
+								<p>
+									<input class="btn btn-primary" type="submit" name="type" value="Encrypt" />
+								</p>
+							</fieldset>
+						</form>
+					</article>
+				</section>
 
-	{% if cypher %}
-		<section>
-			<article>
-				<header>
-					<h3>Ciphertext (hex)</h3>
-				</header>
-				<textarea>{{ cypher }}</textarea>
-			</article>
-		</section>
-	{% endif %}
+				<section id="decrypt" class="tab-pane{% if typ == "decrypt" %} active{% endif %}">
+					<article>
+						<form method="POST" action="">
+							<fieldset>
+								<legend>Decryption</legend>
+								<p>
+									<label for="key">Key (16bit):</label>
+									<input type="text" name="key" value="{{ key }}" id="key" />
+								</p>
+								<p>
+									<label for="message">Cyphertext (hex):</label>
+									<textarea name="message" id="message">{{ cypher }}</textarea>
+								</p>
+								<p>
+									<input class="btn btn-primary" type="submit" name="type" value="Decrypt" />
+								</p>
+							</fieldset>
+						</form>
+					</article>
+				</section>
+			</div>
 
-	{% if message %}
-		<section>
-			<article>
-				<header>
-					<h3>Plain text</h3>
-				</header>
-				<textarea>{{ message }}</textarea>
-			</article>
-		</section>
-	{% endif %}
+			{% if cypher and typ == "encrypt" %}
+				<section>
+					<article>
+						<header>
+							<h3>Ciphertext (hex)</h3>
+						</header>
+						<textarea class="result" readonly onclick="$(this).select()">{{ cypher }}</textarea>
+					</article>
+				</section>
+			{% endif %}
 
-	<footer>
-		<em>DEShi - CRY Assignment 1.k</em>
-	</footer>
+			{% if message and typ == "decrypt" %}
+				<section>
+					<article>
+						<header>
+							<h3>Plain text</h3>
+						</header>
+						<textarea class="result" readonly onclick="$(this).select()">{{ message }}</textarea>
+					</article>
+				</section>
+			{% endif %}
 
+		</div>
+		<footer>
+			<em>DEShi - CRY Assignment 1.k - Group A</em>
+		</footer>
+	</div>
 </body>
 
 </html>
