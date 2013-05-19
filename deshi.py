@@ -148,6 +148,14 @@ class DEShi(object):
 
 	# permutation with given IP
 	def _permutate(self, message, ip):
+
+		print message
+		if len(message) != 16:
+			if type(message) == str:
+				message = "00000000" + message
+			else:
+				message = [0] * 8 + message
+
 		permutated_message = [0] * len(ip)
 		for index, value in enumerate(permutated_message):
 			new_index = ip[index]
