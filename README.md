@@ -9,4 +9,4 @@ Install flask in your python env (`pip install flask` or `easy_install flask`), 
 
 **Demo**
 
-A demo is available at https://mkswap.net/deshi
+A demo is available at http://deshi.mkswap.net
