@@ -7,62 +7,76 @@
 	<title>DEShi</title>
 </head>
 
-<body>
+<body style="width:500px">
 	<header>
 		<h1>DEShi</h1>
 		<p>Simple DES with 16bit keylen</p>
 	</header>
 
-	<section>
+	<section style="float:left;">
 		<article>
-			<header>
-				<h3>Encryption</h3>
-			</header>
-
 			<form method="POST" action="">
-				<p>
-					<label for="message">Plain text message:</label>
-					<textarea name="message" id="message"></textarea>
-				</p>
-				<p>
-					<label for="key">Key (16bit):</label>
-					<input name="key" value="" id="key" />
-				</p>
-
-				<p>
-					<input type="submit" value="Encrypt" />
-				</p>
+				<fieldset>
+					<legend>Encryption</legend>
+					<p>
+						<label for="key">Key (16bit):</label>
+						<input name="key" value="{{ key }}" id="key" />
+					</p>
+					<p>
+						<label for="message">Plain text message:</label>
+						<textarea name="message" id="message">{{ message }}</textarea>
+					</p>
+					<p>
+						<input type="submit" name="type" value="Encrypt" />
+					</p>
+				</fieldset>
 			</form>
-
 		</article>
 	</section>
 
-	{% if message_chunks %}
-	<section>
+	<section style="float:right;">
 		<article>
-			<header>
-				<h3>Message chunks</h3>
-			</header>
-
-			<div class="counter">
-				{% for chunk in message_chunks%}<pre><b>{{chunk|to_ascii}}</b> {{chunk}}</pre>{% endfor %}
-			</div>
+			<form method="POST" action="">
+				<fieldset>
+					<legend>Decryption</legend>
+					<p>
+						<label for="key">Key (16bit):</label>
+						<input name="key" value="{{ key }}" id="key" />
+					</p>
+					<p>
+						<label for="message">Cypher text message:</label>
+						<textarea name="message" id="message">{{ cypher }}</textarea>
+					</p>
+					<p>
+						<input type="submit" name="type" value="Decrypt" />
+					</p>
+				</fieldset>
+			</form>
 		</article>
 	</section>
+
+	<br style="clear:both" />
+
+	{% if cypher %}
+		<section>
+			<article>
+				<header>
+					<h3>Ciphertext</h3>
+				</header>
+				<textarea>{{ cypher }}</textarea>
+			</article>
+		</section>
 	{% endif %}
 
-	{% if permutated_message_chunks %}
-	<section>
-		<article>
-			<header>
-				<h3>Message chunks (permutated)</h3>
-			</header>
-
-			<div class="counter">
-				{% for chunk in permutated_message_chunks%}<pre>{{chunk}}</pre>{% endfor %}
-			</div>
-		</article>
-	</section>
+	{% if message %}
+		<section>
+			<article>
+				<header>
+					<h3>Plain text</h3>
+				</header>
+				<textarea>{{ message }}</textarea>
+			</article>
+		</section>
 	{% endif %}
 
 	<footer>
