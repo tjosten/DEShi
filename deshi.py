@@ -1,70 +1,76 @@
 class DEShi(object):
 
+	# length of key in bit
 	_KEYLEN = 16
 
+	# initial permutation
 	_IP = [10, 6, 14, 2, 8, 16, 12, 4, 1,
 		13, 7, 9, 5, 11, 3, 15]
 
+	# inverse of initual permutation = last permutation
 	_IP_INVERSE = [9, 4, 15, 8, 13, 2, 11, 5,
 		12, 1, 14, 7, 10, 3, 16, 6]
 
+	# expansion for sbox
 	_EXPANSION = [8, 1, 2, 3, 4, 5,
 		4, 5, 6, 7, 8, 1]
 
+	# permutation for sbox results
 	_P = [6, 4, 7, 3,
 		5, 1, 8, 2]
 
-	_PC1 = [11, 15, 4, 13, 7, 9, 3, 2, 5, 14, 6, 10, 12, 1]
+	# permutation 1 for subkey-generation
+	_PC1 = [11, 15, 4, 13, 7, 9, 3,
+		2, 5, 14, 6, 10, 12, 1]
 
-	_PC2 = [6, 11, 4, 8, 13, 3, 12, 5, 1, 10, 2, 9]
+	# permutation 2 for subkey-generation
+	_PC2 = [6, 11, 4, 8, 13, 3,
+		12, 5, 1, 10, 2, 9]
 
+	# amount of left rotations for subkey-generation 1-16
 	_LEFT_ROTATIONS = [
 		1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1
 	]
 
+	# the magic sboxes
 	_SBOXES = [
 		# S1
 		[
-			[14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7],
-			[0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8],
-			[4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0],
-			[15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13],
+			[14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7], # row 0
+			[0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8], # row 1
+			[4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0], # row 2
+			[15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13], # row 3
 		],
 		# S2
 		[
-			[15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10],
-		 	[3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5],
-		 	[0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15],
-		 	[13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9],
+			[15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10], # row 0
+		 	[3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5], # row 1
+		 	[0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15], # row 2
+		 	[13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9], # row 3
 		]
 	]
 
+	# private list of subkeys (length: 16)
 	_subkeys = [0] * 16
 
 	def __init__(self, key, message):
 
-		# check if key is 2 bytes (16 bit) long
-		if len(key) != 2:
-			raise ValueError("Key must be exactly 2 bytes (16 bit) long!")
+		# check if key has the correct length (each char = 8 bit)
+		if len(key) != (self._KEYLEN / 8):
+			raise ValueError("Key must be exactly %d-bit long!" % self._KEYLEN)
 
 		if len(message) == 0:
 			raise ValueError("No message given!")
 
+		# save the original ascii values
 		self._key_ascii = key
 		self._message_ascii = message
 
-		# convert data to binary
+		# convert the key to binary
 		self._key = self._ascii_to_bits(key)
 
-		# generate subkeys
+		# generate the subkeys
 		self._generate_subkeys()
-
-		print "========="
-		print "Key: %s" % self._key
-		print "Subkeys:"
-		for subkey in self._subkeys:
-			print subkey
-		print "========="
 
 	##############################################
 	# private methods
@@ -76,10 +82,11 @@ class DEShi(object):
 		result = []
 		position = char = 0
 
-		# first 8 bit:
+		# first and last 8 bit
 		first = bits[:8]
 		last = bits[8:]
 
+		# the first and the last string from the above 8-bits
 		first_string = [''] * len(first)
 		last_string = [''] * len(last)
 
@@ -88,15 +95,13 @@ class DEShi(object):
 		while i < len(first):
 			first_string[i] = str(first[i])
 			i+=1
-		first_string = eval('0b'+''.join(first_string))
+		first_string = eval('0b'+''.join(first_string)) # i'm pretty sure this could be solved prettier.
 
 		i = 0
 		while i < len(last):
 			last_string[i] = str(last[i])
 			i+=1
-		last_string = eval('0b'+''.join(last_string))
-
-		#print first_string
+		last_string = eval('0b'+''.join(last_string)) # i'm pretty sure this could be solved prettier.
 
 		return "%s%s" % (chr(first_string), chr(last_string))
 
@@ -148,17 +153,20 @@ class DEShi(object):
 
 				j += 1
 
-			# create the subkey from L and R with permutation PC2
+			# create the subkey from (L + R) with permutation PC2
 			self._subkeys[i] = self._permutate(L + R, self._PC2)
 
 			i += 1
 
 	# permutation with given IP
 	def _permutate(self, message, ip):
+		# the output has the length of the permutation "matrix"
 		permutated_message = [0] * len(ip)
+
 		for index, value in enumerate(permutated_message):
 			new_index = ip[index]
 			permutated_message[index] = int(message[new_index-1])
+
 		return permutated_message
 
 	# the DEShi algo
@@ -186,6 +194,8 @@ class DEShi(object):
 
 			# xor operation for the lists, the python way
 			#R = list(map(lambda e, key: e ^ key, R, subkey))
+
+			# but this one is better understandable, i guess..
 			j = 0
 			while j < len(R):
 				R[j] = R[j] ^ subkey[j]
@@ -200,7 +210,10 @@ class DEShi(object):
 			while j < len(blocks):
 				block = blocks[j]
 
+				# calculate the row out of the first and the last bit
 				row = bin(block[0] + block[5])
+
+				# calculate the col out of the 1, 2, 3, 4 bit
 				col = bin(block[1] + block[2] +  block[3] + block[4])
 
 				# get correct integer value from sbox
@@ -210,22 +223,21 @@ class DEShi(object):
 
 				j += 1
 
-			# now permutate the results with P
+			# cummulate the sbox results
 			R_tmp = 0
 			for result in sbox_results:
 				R_tmp += result
 
-			print "R: %s" % R
-			print "L: %s" % L
-
 			# convert value to binary again, remove the b prefix and make it 8 bit
 			result_binary = bin(R_tmp)[2:].zfill(8)
-			R = self._permutate(result_binary, self._P)
 
-			print R
+			# now permutate the results with P
+			R = self._permutate(result_binary, self._P)
 
 			# and finally: XOR with L
 			#R = list(map(lambda r, l: r ^ l, R, L))
+
+			# and again, this one is easier to understand:
 			j = 0
 			while j < len(R):
 				R[j] = R[j] ^ L[j]
@@ -235,14 +247,15 @@ class DEShi(object):
 			L = temporary_R
 
 			i += 1
+
+			# amend for either the encryption or decryption,
+			# so the right key is used in the next iteration
 			if typ == "encrypt":
 				iteration += 1
 			else:
 				iteration -= 1
 
-			print "-------"
-
-		# done, final permutation
+		# done, final permutation with the inverse of the initial permutation
 		final = self._permutate(R + L, self._IP_INVERSE)
 
 		return final
@@ -270,16 +283,11 @@ class DEShi(object):
 
 			# append cypher text to result list, but convert it to ascii first
 			result.append(self._bits_to_ascii(encrypted_data))
-			# ok, we don't convert it to ascii as we're 8-bit here and 255 > 128, so we get illegal characters. we then use a binary cypher text.
-			#result.append(encrypted_data)
 
+			# continue with the next 2 bits, because we already read 2
 			i += 2
 
 		result_text = "".join(result)
-
-		"""for r in result:
-			for i in r:
-				result_text += str(i)"""
 
 		self.cyphertext = result_text
 
@@ -303,6 +311,7 @@ class DEShi(object):
 			# append plain text to result list, but convert it to ascii first
 			result.append(self._bits_to_ascii(decrypted_data))
 
+			# continue with the next 2 bits, because we already read 2
 			i += 2
 
 		self.plaintext = ''.join(result)
